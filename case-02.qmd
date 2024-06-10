@@ -1,0 +1,276 @@
+---
+title: "Analítica Avanzada de Datos"
+subtitle: "Caso #2: Pollos Riko Riko"
+author: 
+  - name: Jorge I. Vélez, PhD
+    email: jvelezv@uninorte.edu.co
+    url: https://jorgeivanvelez.netlify.app/
+    orcid: 0000-0002-3146-7899
+    affiliations:
+      - name: Universidad del Norte, Barranquilla
+date: "5/31/2024"
+lang: es
+self-contained: true
+code-fold: show
+fontsize: 14pt
+number-sections: false
+format: html
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+options(warn = -1)
+```
+
+### Generalidades
+
+1. El ejercicio tiene **4 preguntas**. El puntaje asociado a cada conjunto de preguntas se encuentra entre (). 
+2. La solución debe enviarse en formato `HTML` a <jvelezv@uninorte.edu.co> antes del **Viernes 7 de Junio de 2024**.
+
+
+## Contexto Analítico
+
+Pollos Riko Riko (PRR) es la empresa líder en productos avícolas de la Región Caribe. Su centro de operaciones, ubicado en Sabanagrande, Atlántico, produce **4 tipos de producto**: (_i_)  pollo entero, (_ii_) bandejas de pechuga entera, (_iii_) bandejas de pernil y (_iv_) bandejas de alas. El precio promedio de venta de cada producto, por libra, es \$8000, \$4300, \$3400 y \$2900, respectivamente. Se sabe que la participación de cada producto en las ventas _totales_ de la compañía es $0<p_j<1$ conocido, $j=1,2,3,4$. Por supuesto, $p_1+p_2+p_3+p_4 = 1$. 
+
+Los animales se sacrifican luego de 40 días de ser alimentados con una dieta balanceada que incluye nutrientes especiales (variable $x_1$ en gramos/día), agua (variable $x_2$ en ml/día) y  forraje (variable $x_3$ en gramos/día), además de la raza (variable $x_4$ con niveles `A`, `B` y `C`) y el hecho de que sean expuestos a una luz especial durante la noche (variable $x_5$ con niveles `0`: No y `1`: Si). Actualmente, el _peso promedio_ de un pollo que crece en las instalaciones de la compañía está en el intervalo (2400, 2800) gramos, con una confianza del 95%.
+
+Con miras a **aumentar la eficiencia de la planta**,[^1] PRR ha decidido aumentar el peso de los animales antes de su sacrificio. Para ello, decide realizar un experimento en el que a 100 grupos de 100 animales (i.e., lote) se les proporciona la dieta balanceada y se cuantifica, al final del tiempo de engorde, el peso promedio alcanzado (variable respuesta $Y$). Los datos que se tomaron se encuentran [aquí](https://www.dropbox.com/scl/fi/09j9ew9qp8wu5qq54aff2/pollosrikoriko.txt?rlkey=2c2up64l3vctaihbn54154tfk&dl=0).
+
+[^1]: Esto se refiere a que, al final del período de engorde, el peso promedio de los animales al utilizar las _nuevas_ condiciones, supere el peso promedio actual.
+
+```{r, echo=TRUE, eval=TRUE}
+## data set
+url<-'https://www.dropbox.com/scl/fi/09j9ew9qp8wu5qq54aff2/pollosrikoriko.txt?rlkey=2c2up64l3vctaihbn54154tfk&e=1&dl=1'
+x <- read.csv(url, sep = '\t', header = TRUE)
+head(x)
+```
+
+## Pregunta 1
+
+Esquematice cómo tomaría los datos necesarios para apoyar la toma de decisiones de PRR y cómo los organizaría en un archivo. Cuál es la unidad experimental?  Si en la actualidad PRR dispone de 200 [galpones](https://i0.wp.com/actualidadavipecuaria.com/wp-content/uploads/2020/06/Avicultura-en-altura-11.jpg?fit=1200%2C675&ssl=1) de $14m$ de ancho por $140m$ de largo en los que pueden albergar _hasta_ 8 pollos por $m^2$, determine el peso total promedio alcanzado al final de la etapa de engorde en las condiciones _actuales_. 
+
+Se seleccionan 100 grupos de 100 pollos cada uno.
+Se registran las siguientes variables:
+Peso promedio final ($Y$) en gramos.
+Nutrientes en gramos por día ($x_1$).
+Agua en ml por día ($x_2$).
+Forraje en gramos por día ($x_3$).
+Raza ($x_4$) con niveles A, B, y C.
+Exposición a luz especial durante la noche ($x_5$) con niveles 0 (No) y 1 (Sí).
+
+## Area del galpon
+
+El galpon tiene una area de 14m x 140m y se cuenta con 200 galpones
+
+
+```{r}
+# Calcular el peso total promedio alcanzado en las condiciones actuales
+pollos_por_galpon <- 8 * 14 * 140 # 8 pollos por galpon por el area del galpon (14 m * 140m)
+total_pollos <- pollos_por_galpon * 200 # PRR dispone de 200 galpones
+cat("Capacidad total:", total_pollos, "pollos\n")
+```
+
+## Peso promedio de los pollos
+
+El peso promedio de un pollo esta en el intervalo (2400, 2800) gramos, con una confianza del 95%.
+
+```{r}
+# Calcular el peso promedio
+peso_promedio <- mean(x$y)
+cat("Peso promedio:", peso_promedio, "gramos\n")
+```
+## Peso total de los pollos
+
+```{r}
+peso_total <- total_pollos * peso_promedio / 1000 # en kilogramos
+cat("Peso total promedio alcanzado en las condiciones actuales:", peso_total, "kg\n")
+```
+
+<br>
+
+## Pregunta 2
+
+Ajuste un modelo de RLM. Podemos decir que el modelo es _bueno_ para explicar el peso promedio del grupo de 100 pollos? Si tuviera que recomendar una raza en particular, cuál sería y por qué?  Es posible hablar de uniformidad en el peso, independiente de la raza? Escriba el modelo para la raza `B` y determine el peso promedio esperado cuando $x_1 = 20$, $x_2 = 60$ y $x_3 = 60$, y los animales **no se exponen** a la luz.  Calcule el peso promedio para la raza `A` en las mismas condiciones.
+
+## Modelo RLM
+
+```{r}
+# Convertir las variables categóricas a factores
+x$x4 <- as.factor(x$x4)
+x$x5 <- as.factor(x$x5)
+# Ajustar el modelo de regresión lineal múltiple
+modelo_rlm <- lm(y ~ x1 + x2 + x3 + x4 + x5, data = x)
+# Resumen del modelo
+summary(modelo_rlm)
+```
+## Bondad del modelo
+
+El $R^2_{ajustado}=0.5465$, indica que aproximadamente el 54.65% de la variabilidad del peso medio de los pollos es explicado por las variables del modelo.
+
+## Coeficientes
+
+La variable Nutrientes $x_{1}$ tiene un coeficiente de $2.0990$ y un $p-valor =2e-16$, por lo tanto no es significativo.
+
+La variable Agua $x_{2}$ tiene un coeficiente de $4.1656$ y un $p-valor =4.51e-06$, por lo tanto no significativo.
+
+La variable Forraje $x_{3}$ tiene un coeficiente de $-2.5947$ y un $p-valor =2.12e-06$, por lo tanto es significativo.
+
+
+## Modelo para la raza B
+
+```{r}
+# Coeficientes del modelo
+#coeficientes <- c("(Intercept)" = 2630.7862, "x1" = 2.0990, "x2" = 4.1656, "x3" = -2.5947, "x4B" = -86.5364, "x4C" = -10.0919, "x51" = 74.8475)
+coeficientes<-modelo_rlm$coefficients
+
+# Condiciones especificadas
+x1 <- 20
+x2 <- 60
+x3 <- 60
+x5 <- 0
+
+# Calcular el peso promedio para la raza B
+peso_esperado_B <- coeficientes[1] + coeficientes[2] * x1 + coeficientes[3] * x2 + coeficientes[4] * x3 + coeficientes[5] + coeficientes[6] * x5
+cat("Peso promedio esperado para la raza B:", peso_esperado_B, "gramos\n")
+
+# Calcular el peso promedio para la raza A
+peso_esperado_A <- coeficientes[1] + coeficientes[2] * x1 + coeficientes[3] * x2 + coeficientes[4] * x3 + coeficientes[5] * x5
+cat("Peso promedio esperado para la raza A:", peso_esperado_A, "gramos\n")
+
+```
+El modelo ajustado sugiere que bajo las condiciones especificadas, la raza A produce un peso promedio mayor en comparación con la raza B.
+
+<br>
+
+## Pregunta 3
+
+Determine si el modelo es o no válido para predecir. Calcule $E[y|\mathbf{x}_0]$ donde $\mathbf{x}_0 = (28, 65, 70,$ `A` $,1)$. Recomendaría el engorde de los pollos en estas condiciones para aumentar la eficiencia? Si la pechuga, los dos perniles y las alas representan el 40%, 30% y 15% del peso del pollo, respectivamente, cuál es el precio de venta promedio de un pollo engordado en estas condiciones?  Suponga que $p_1=0.1$, $p_2=0.3$, $p_3=0.45$ y $p_4=0.15$. 
+
+
+## Predicción
+
+Basado en el $R^2=0.5468$ el modelo es relativamente bueno, por otro lado, gran parte de los coeficientes de las variables explicativas son significativos.
+
+## Calculo $E[y|\mathbf{x}_0]$
+
+```{r}
+# Condiciones especificadas
+x1_0 <- 28
+x2_0 <- 65
+x3_0 <- 70
+x4_0 <- 0 # Raza A
+x5_0 <- 1 # 
+
+# Calcular el peso promedio esperado para las condiciones especificadas
+peso_esperado_x0 <- coeficientes[1] + coeficientes[2] * x1_0 + coeficientes[3] * x2_0 + coeficientes[4] * x3_0 + coeficientes[7] * x5_0
+cat("Peso promedio esperado para las condiciones especificadas:", peso_esperado_x0, "gramos\n")
+```
+Teniendo en cuenta que el peso medio de los pollos esta entre (2400, 2800) con un grado de confianza del 95%, podemos concluir que las condiciones propuestas es posible aumentar la eficiencia en terminos de peso (engorde de los pollos).
+
+Recomendaría el engorde de los pollos en estas condiciones para aumentar la eficiencia de la planta.
+
+## Precio de venta 
+
+Partiendo desde el precio del pollo por libras y lo que representa segun su procedencia, tenemos:
+
+- Pechuga: $4.300 40%
+
+- Dos perniles: $3.400 30%
+
+- Alas: $2.900 15%
+
+```{r}
+
+lbxgr<-453.59237
+
+# Precios por libra
+precio_pollo_lb<-8000
+precio_pechuga_lb <- 4300
+precio_perniles_lb <- 3400
+precio_alas_lb <- 2900
+
+# Pesos en gramos
+peso_pollo <- 1 * peso_esperado_x0
+peso_pechuga <- 0.40 * peso_esperado_x0
+peso_perniles <- 0.30 * peso_esperado_x0
+peso_alas <- 0.15 * peso_esperado_x0
+
+# Pesos en libras
+peso_pechuga_lb <- peso_pechuga / lbxgr
+peso_perniles_lb <- peso_perniles / lbxgr
+peso_alas_lb <- peso_alas / lbxgr
+
+# Precio total de cada parte
+precio_pechuga <- peso_pechuga_lb * precio_pechuga_lb
+precio_perniles <- peso_perniles_lb * precio_perniles_lb * 2 # dos perniles
+precio_alas <- peso_alas_lb * precio_alas_lb
+
+# Precio promedio por pollo
+precio_total <- precio_pechuga + precio_perniles + precio_alas
+cat("Precio promedio de un pollo engordado en estas condiciones:", precio_total, "\n")
+```
+
+<br>
+
+## Pregunta 4
+
+A cuánto ascienden las ventas de los **4 tipos de producto** al utilizar estas condiciones de engorde?  Si los gastos operacionales ascienden a \$5,000,000 mensuales/galpón, _aproxime_ la utilidad.
+
+
+## Precio promedio de venta
+
+El precio promedio de venta de cada producto, por libra es:
+
+- Pollo entero: $8.000 
+
+- Pechuga: $4.300
+
+- Dos perniles: $3.400
+
+- Alas: $2.900
+
+La produccion total es de 8 pollos por metro cuadrado y son 200 galpones que miden 14m x 140m.
+
+```{r}
+prod_pollos<-(200*(14*140))*8
+cat("La produccion de pollos por es:", prod_pollos, "\n")
+```
+Peso medio en libras
+
+```{r}
+peso_esperado_x0_lbs <- peso_esperado_x0 / 453.592
+cat("El peso medio en libras de los pollos es:", peso_esperado_x0_lbs, "\n")
+```
+Peso de los pollos en libras
+
+```{r}
+peso_total_prod_pollos <-prod_pollos*peso_esperado_x0_lbs
+cat("El peso total en libras de los pollos es:", peso_total_prod_pollos,"Lbs", "\n")
+```
+Distribucion del peso por tipo de producto
+
+```{r}
+# Datos de entrada
+precio_entero = 8000
+precio_pechuga = 4300
+precio_pernil = 3400
+precio_alas = 2900
+
+p_1<-0.1  # (i) pollo entero
+p_2<-0.3  # (ii) bandejas de pechuga entera
+p_3<-0.45 # (iii) bandejas de permil
+p_4<-0.15 # (iv) bandeja de alas
+
+# Calcular las ventas por tipo de producto
+ventas_entero <- peso_total_prod_pollos * p_1 * precio_entero
+ventas_pechuga <- peso_total_prod_pollos * p_2 * precio_pechuga
+ventas_pernil <- peso_total_prod_pollos * p_3 * precio_pernil
+ventas_alas <- peso_total_prod_pollos * p_4 * precio_alas
+ventas_total <- ventas_entero + ventas_pechuga + ventas_pernil + ventas_alas
+operacionx30 <- 5000000
+operaciox40 <- (operacionx30/30)*40
+utl <- ventas_total - operaciox40
+cat("La utilidad de los pollos es:", utl, "\n")
+```
+
+
