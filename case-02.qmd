@@ -109,11 +109,17 @@ El $R^2_{ajustado}=0.5465$, indica que aproximadamente el 54.65% de la variabili
 
 ## Coeficientes
 
-La variable Nutrientes $x_{1}$ tiene un coeficiente de $2.0990$ y un $p-valor =2e-16$, por lo tanto no es significativo.
+La variable Nutrientes $x_{1}$ tiene un coeficiente de $2.0990$ y un $p-valor =0.098135$, por lo tanto no es significativo. Por cada incremento de un gramo en la cantidad de nutrientes especiales diarios, el peso promedio del pollo aumenta en aproximadamente $2.0990$ gramos.
 
-La variable Agua $x_{2}$ tiene un coeficiente de $4.1656$ y un $p-valor =4.51e-06$, por lo tanto no significativo.
+La variable Agua $x_{2}$ tiene un coeficiente de $4.1656$ y un $p-valor =4.51e-06$, por lo tanto significativo. Por cada incremento de un mililitro en la cantidad de agua diaria, el peso promedio del pollo aumenta en aproximadamente $4.1656$ gramos.
 
 La variable Forraje $x_{3}$ tiene un coeficiente de $-2.5947$ y un $p-valor =2.12e-06$, por lo tanto es significativo.
+
+En la variable raza $x_{4}$, los pollos de raza B pesan, en promedio, 86.54 gramos menos que los pollos de raza A, manteniendo constantes las demás variables. Este coeficiente es altamente significativo $p-valor =0.000131$.
+
+Los pollos de raza C pesan, en promedio, 10.09 gramos menos que los pollos de raza A. Este coeficiente no es significativo $p-valor =0.650868$.
+
+En la variable exposicion a luz especial $x_{5}$, los pollos que son expuestos a luz especial durante la noche pesan, en promedio, $74.85$ gramos más que aquellos que no son expuestos a esta luz. Este coeficiente es altamente significativo $p-valor = 6.13e-05$.
 
 
 ## Modelo para la raza B
@@ -270,7 +276,7 @@ ventas_total <- ventas_entero + ventas_pechuga + ventas_pernil + ventas_alas
 operacionx30 <- 5000000
 operaciox40 <- (operacionx30/30)*40
 utl <- ventas_total - operaciox40
-cat("La utilidad de los pollos es:", utl, "\n")
+cat("La utilidad de los pollos es:", utl,"Lbs", "\n")
 ```
 
 

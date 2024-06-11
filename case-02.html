@@ -3383,9 +3383,12 @@ F-statistic:  20.9 on 6 and 93 DF,  p-value: 2.237e-15</code></pre>
 </section>
 <section id="coeficientes" class="level2">
 <h2 class="anchored" data-anchor-id="coeficientes">Coeficientes</h2>
-<p>La variable Nutrientes <span class="math inline">\(x_{1}\)</span> tiene un coeficiente de <span class="math inline">\(2.0990\)</span> y un <span class="math inline">\(p-valor =2e-16\)</span>, por lo tanto no es significativo.</p>
-<p>La variable Agua <span class="math inline">\(x_{2}\)</span> tiene un coeficiente de <span class="math inline">\(4.1656\)</span> y un <span class="math inline">\(p-valor =4.51e-06\)</span>, por lo tanto no significativo.</p>
+<p>La variable Nutrientes <span class="math inline">\(x_{1}\)</span> tiene un coeficiente de <span class="math inline">\(2.0990\)</span> y un <span class="math inline">\(p-valor =0.098135\)</span>, por lo tanto no es significativo. Por cada incremento de un gramo en la cantidad de nutrientes especiales diarios, el peso promedio del pollo aumenta en aproximadamente <span class="math inline">\(2.0990\)</span> gramos.</p>
+<p>La variable Agua <span class="math inline">\(x_{2}\)</span> tiene un coeficiente de <span class="math inline">\(4.1656\)</span> y un <span class="math inline">\(p-valor =4.51e-06\)</span>, por lo tanto significativo. Por cada incremento de un mililitro en la cantidad de agua diaria, el peso promedio del pollo aumenta en aproximadamente <span class="math inline">\(4.1656\)</span> gramos.</p>
 <p>La variable Forraje <span class="math inline">\(x_{3}\)</span> tiene un coeficiente de <span class="math inline">\(-2.5947\)</span> y un <span class="math inline">\(p-valor =2.12e-06\)</span>, por lo tanto es significativo.</p>
+<p>En la variable raza <span class="math inline">\(x_{4}\)</span>, los pollos de raza B pesan, en promedio, 86.54 gramos menos que los pollos de raza A, manteniendo constantes las demás variables. Este coeficiente es altamente significativo <span class="math inline">\(p-valor =0.000131\)</span>.</p>
+<p>Los pollos de raza C pesan, en promedio, 10.09 gramos menos que los pollos de raza A. Este coeficiente no es significativo <span class="math inline">\(p-valor =0.650868\)</span>.</p>
+<p>En la variable exposicion a luz especial <span class="math inline">\(x_{5}\)</span>, los pollos que son expuestos a luz especial durante la noche pesan, en promedio, <span class="math inline">\(74.85\)</span> gramos más que aquellos que no son expuestos a esta luz. Este coeficiente es altamente significativo <span class="math inline">\(p-valor = 6.13e-05\)</span>.</p>
 </section>
 <section id="modelo-para-la-raza-b" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-para-la-raza-b">Modelo para la raza B</h2>
@@ -3568,10 +3571,10 @@ F-statistic:  20.9 on 6 and 93 DF,  p-value: 2.237e-15</code></pre>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>operacionx30 <span class="ot">&lt;-</span> <span class="dv">5000000</span></span>
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>operaciox40 <span class="ot">&lt;-</span> (operacionx30<span class="sc">/</span><span class="dv">30</span>)<span class="sc">*</span><span class="dv">40</span></span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>utl <span class="ot">&lt;-</span> ventas_total <span class="sc">-</span> operaciox40</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;La utilidad de los pollos es:&quot;</span>, utl, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;La utilidad de los pollos es:&quot;</span>, utl,<span class="st">&quot;Lbs&quot;</span>, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>La utilidad de los pollos es: 79992462915 </code></pre>
+<pre><code>La utilidad de los pollos es: 79992462915 Lbs </code></pre>
 </div>
 </div>
 </section>
